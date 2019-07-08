@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import os
+
+import cv2
 import rospy
 import yaml
 from cv_bridge import CvBridge
@@ -11,11 +14,8 @@ from styx_msgs.msg import TrafficLightArray, TrafficLight
 
 from light_classification.tl_classifier import TLClassifier
 
-# from darknet_ros_msgs.msg import BoundingBox
-# from darknet_ros_msgs.msg import BoundingBoxes
-
-
 STATE_COUNT_THRESHOLD = 3
+SAVING_IMAGES = True
 
 class TLDetector(object):
     def __init__(self):
@@ -34,9 +34,14 @@ class TLDetector(object):
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
         self.state_count = 0
+        self.image_counter = 0
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier("frozen_inference_graph.pb")
+        if not SAVING_IMAGES:
+            self.light_classifier = TLClassifier("frozen_inference_graph.pb")
+        else:
+            if not os.path.exists("../../../images/"):
+                os.makedirs("../../../images/")
 
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
@@ -128,9 +133,25 @@ class TLDetector(object):
             self.prev_light_loc = None
             return False
         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-        return self.light_classifier.get_classification(cv_image)
+        if not SAVING_IMAGES:
+            traffic_color = self.light_classifier.get_classification(cv_image)
+            return traffic_color
+        else:
+            self.image_counter += 1
+            save_file = "../../../images/{}-{}.jpeg".format(self.traffic_color_to_file_name(light.state),
+                                                            self.image_counter)
+            cv2.imwrite(save_file, cv_image)
+            return light.state
 
-        
+    def traffic_color_to_file_name(self, state):
+        if state == TrafficLight.GREEN:
+            return "green"
+        elif state == TrafficLight.YELLOW:
+            return "yellow"
+        elif state == TrafficLight.RED:
+            return "red"
+        return "none"
+
     # Important function
     """Finds closest visible traffic light, if one exists, and determines its
             location and color

@@ -9,10 +9,8 @@ project(shared_utils)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  numpy
   roscpp
   rospy
-  scipy
   sensor_msgs
   std_msgs
   styx_msgs

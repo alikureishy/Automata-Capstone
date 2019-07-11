@@ -1,6 +1,7 @@
 import rospy
 
 class WUParams(object):
+    NODE_NAME = "waypoint_updater"
     """
     Waypoint Updater params
     """

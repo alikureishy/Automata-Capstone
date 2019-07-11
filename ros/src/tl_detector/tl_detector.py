@@ -8,6 +8,8 @@ from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped
 from scipy.spatial import KDTree
 from sensor_msgs.msg import Image
+from shared_utils.shared_params import SAVING_IMAGES
+from shared_utils.shared_params import TEST_MODE
 from std_msgs.msg import Int32
 from styx_msgs.msg import Lane
 from styx_msgs.msg import TrafficLightArray, TrafficLight
@@ -15,7 +17,6 @@ from styx_msgs.msg import TrafficLightArray, TrafficLight
 from light_classification.tl_classifier import TLClassifier
 
 STATE_COUNT_THRESHOLD = 3
-SAVING_IMAGES = True
 
 class TLDetector(object):
     def __init__(self):
@@ -29,7 +30,6 @@ class TLDetector(object):
 
         self.camera_image = None
         self.lights = []
-        self.TEST_MODE = False
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
@@ -37,9 +37,10 @@ class TLDetector(object):
         self.image_counter = 0
 
         self.bridge = CvBridge()
-        if not SAVING_IMAGES:
-            self.light_classifier = TLClassifier("frozen_inference_graph.pb")
-        else:
+        if not TEST_MODE:
+            self.light_classifier = TLClassifier("graph_optimized.pb")
+
+        if SAVING_IMAGES:
             if not os.path.exists("../../../images/"):
                 os.makedirs("../../../images/")
 
@@ -92,7 +93,6 @@ class TLDetector(object):
         Args:
             msg (Image): image from car-mounted camera
         """
-        self.has_image = True
         self.camera_image = msg
         light_wp, state = self.process_traffic_lights()
         '''
@@ -126,22 +126,26 @@ class TLDetector(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        if self.TEST_MODE:
-            return light.state
 
-        if (not self.has_image):
-            self.prev_light_loc = None
-            return False
-        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-        if not SAVING_IMAGES:
-            traffic_color = self.light_classifier.get_classification(cv_image)
-            return traffic_color
+        if TEST_MODE:
+            traffic_color = light.state
+            if SAVING_IMAGES:
+                cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         else:
-            self.image_counter += 1
-            save_file = "../../../images/{}-{}.jpeg".format(self.traffic_color_to_file_name(light.state),
-                                                            self.image_counter)
-            cv2.imwrite(save_file, cv_image)
-            return light.state
+            cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+            traffic_color = self.light_classifier.get_classification(cv_image)
+
+        if SAVING_IMAGES:
+            self.saveImages(traffic_color, cv_image)
+
+        return traffic_color
+
+    def saveImages(self, traffic_color, cv_image):
+        self.image_counter += 1
+        save_file = "../../../images/{}-{}.jpeg".format(self.traffic_color_to_file_name(traffic_color),
+                                                        self.image_counter)
+        rospy.logwarn("saving image: %s", save_file)
+        cv2.imwrite(save_file, cv_image)
 
     def traffic_color_to_file_name(self, state):
         if state == TrafficLight.GREEN:

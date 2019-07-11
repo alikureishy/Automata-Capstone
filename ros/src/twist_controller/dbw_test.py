@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import os
 import csv
+import os
 
 import rospy
+from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd
 from std_msgs.msg import Bool
-from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
-
 
 '''
 You can use this file to test your DBW code against a bag recorded with a reference implementation.

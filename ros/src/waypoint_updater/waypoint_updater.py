@@ -7,6 +7,9 @@ from styx_msgs.msg import Lane, Waypoint
 from std_msgs.msg import Int32
 from scipy.spatial import KDTree
 
+from shared_utils.topics import Topics
+from shared_utils.wp_updater_params import WUParams
+
 import math
 
 '''
@@ -29,16 +32,16 @@ MAX_DECEL = 0.5
 
 class WaypointUpdater(object):
     def __init__(self):
-        rospy.init_node('waypoint_updater')
+        rospy.init_node(WUParams.NODE_NAME)
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size=2)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size=8)
+
+        Topics.CurrentPose.Subscriber(self.pose_cb, queue_size=2)
+        Topics.BaseWaypoints.Subscriber(self.waypoints_cb, queue_size=8)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
-        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb, queue_size=1)
+        Topics.TrafficWaypoint.Subscriber(self.traffic_cb, queue_size=1)
 
-
-        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
+        self.final_waypoints_pub = Topics.FinalWaypoints.Publisher(queue_size=1)
 
         self.base_lane = None
         self.pose = None

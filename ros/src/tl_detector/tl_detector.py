@@ -38,7 +38,7 @@ class TLDetector(object):
 
         self.bridge = CvBridge()
         if not TEST_MODE:
-            self.light_classifier = TLClassifier("NOT IMPLEMENTED.pb")
+            self.light_classifier = TLClassifier("graph_optimized.pb")
 
         if SAVING_IMAGES:
             if not os.path.exists("../../../images/"):

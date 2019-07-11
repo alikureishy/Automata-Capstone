@@ -23,6 +23,4 @@
 
     <param name="sim_mode" value="1" type="int" />
 
-
-
 </launch>

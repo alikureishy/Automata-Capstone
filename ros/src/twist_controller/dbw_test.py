@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import os
 import csv
+import os
 
 import rospy
+from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd
 from std_msgs.msg import Bool
-from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
-
 
 '''
 You can use this file to test your DBW code against a bag recorded with a reference implementation.
@@ -14,7 +13,7 @@ The bag can be found at https://s3-us-west-1.amazonaws.com/udacity-selfdrivingca
 
 To use the downloaded bag file, rename it to 'dbw_test.rosbag.bag' and place it in the CarND-Capstone/data folder.
 Then with roscore running, you can then use roslaunch with the dbw_test.launch file found in 
-<project_repo>/ros/src/twist_controller/launch.
+<project_repo>/ros/include/twist_controller/launch.
 
 This file will produce 3 csv files which you can process to figure out how your DBW node is
 performing on various commands.

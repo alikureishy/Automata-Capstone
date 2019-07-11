@@ -9,6 +9,7 @@ from geometry_msgs.msg import PoseStamped
 from scipy.spatial import KDTree
 from sensor_msgs.msg import Image
 from shared_utils.shared_params import SAVING_IMAGES
+from shared_utils.shared_params import TEST_MODE
 from std_msgs.msg import Int32
 from styx_msgs.msg import Lane
 from styx_msgs.msg import TrafficLightArray, TrafficLight
@@ -143,6 +144,7 @@ class TLDetector(object):
         self.image_counter += 1
         save_file = "../../../images/{}-{}.jpeg".format(self.traffic_color_to_file_name(traffic_color),
                                                         self.image_counter)
+        rospy.logwarn("saving image: %s", save_file)
         cv2.imwrite(save_file, cv_image)
 
     def traffic_color_to_file_name(self, state):

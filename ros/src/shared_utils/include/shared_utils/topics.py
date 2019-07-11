@@ -13,8 +13,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, PoseStamped, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, PoseStamped, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, PoseStamped, queue_size=queue_size, latch=latch)
 
     class BaseWaypoints(object):
         __topic_name__ = "/base_waypoints"
@@ -22,8 +22,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, Lane, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size, latch=latch)
 
     class TrafficWaypoint(object):
         __topic_name__ = "/traffic_waypoint"
@@ -31,8 +31,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, Int32, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size, latch=latch)
 
     class ObstacleWaypoint(object):
         __topic_name__ = "/obstacle_waypoint"
@@ -40,8 +40,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, Int32, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size, latch=latch)
 
     class TwistCmd(object):
         __topic_name__ = "/twist_cmd"
@@ -49,8 +49,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, TwistStamped, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size, latch=latch)
 
     class CurrentVelocity(object):
         __topic_name__ = "/current_velocity"
@@ -58,8 +58,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, TwistStamped, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size, latch=latch)
 
     class ImageColor(object):
         __topic_name__ = "/image_color"
@@ -67,8 +67,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, Image, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, Image, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, Image, queue_size=queue_size, latch=latch)
 
     class FinalWaypoints(object):
         __topic_name__ = "final_waypoints"
@@ -76,8 +76,8 @@ class Topics(object):
         def Subscriber(cls, callback, queue_size=None):
             return rospy.Subscriber(cls.__topic_name__, Lane, callback, queue_size=queue_size)
         @classmethod
-        def Publisher(cls, queue_size=None):
-            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size)
+        def Publisher(cls, queue_size=None, latch=False):
+            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size, latch=latch)
 
     class Vehicle(object):
         class SteeringCmd(object):
@@ -86,8 +86,8 @@ class Topics(object):
             def Subscriber(cls, callback, queue_size=None):
                 return rospy.Subscriber(cls.__topic_name__, SteeringCmd, callback, queue_size=queue_size)
             @classmethod
-            def Publisher(cls, queue_size=None):
-                return rospy.Publisher(cls.__topic_name__, SteeringCmd, queue_size=queue_size)
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.__topic_name__, SteeringCmd, queue_size=queue_size, latch=latch)
 
         class ThrottleCmd(object):
             __topic_name__ = "/vehicle/throttle_cmd"
@@ -95,8 +95,8 @@ class Topics(object):
             def Subscriber(cls, callback, queue_size=None):
                 return rospy.Subscriber(cls.__topic_name__, ThrottleCmd, callback, queue_size=queue_size)
             @classmethod
-            def Publisher(cls, queue_size=None):
-                return rospy.Publisher(cls.__topic_name__, ThrottleCmd, queue_size=queue_size)
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.__topic_name__, ThrottleCmd, queue_size=queue_size, latch=latch)
 
         class BrakeCmd(object):
             __topic_name__ = "/vehicle/brake_cmd"
@@ -104,8 +104,8 @@ class Topics(object):
             def Subscriber(cls, callback, queue_size=None):
                 return rospy.Subscriber(cls.__topic_name__, BrakeCmd, callback, queue_size=queue_size)
             @classmethod
-            def Publisher(cls, queue_size=None):
-                return rospy.Publisher(cls.__topic_name__, BrakeCmd, queue_size=queue_size)
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.__topic_name__, BrakeCmd, queue_size=queue_size, latch=latch)
 
         class TrafficLights(object):
             __topic_name__ = "/vehicle/traffic_lights"
@@ -113,8 +113,8 @@ class Topics(object):
             def Subscriber(cls, callback, queue_size=None):
                 return rospy.Subscriber(cls.__topic_name__, TrafficLightArray, callback, queue_size=queue_size)
             @classmethod
-            def Publisher(cls, queue_size=None):
-                return rospy.Publisher(cls.__topic_name__, TrafficLightArray, queue_size=queue_size)
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.__topic_name__, TrafficLightArray, queue_size=queue_size, latch=latch)
 
         class DBWEnabled(object):
             __topic_name__ = "/vehicle/dbw_enabled"
@@ -122,5 +122,5 @@ class Topics(object):
             def Subscriber(cls, callback, queue_size=None):
                 return rospy.Subscriber(cls.__topic_name__, Bool, callback, queue_size=queue_size)
             @classmethod
-            def Publisher(cls, queue_size=None):
-                return rospy.Publisher(cls.__topic_name__, Bool, queue_size=queue_size)
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.__topic_name__, Bool, queue_size=queue_size, latch=latch)

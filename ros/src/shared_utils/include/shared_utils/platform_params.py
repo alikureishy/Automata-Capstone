@@ -9,5 +9,4 @@ class PlatformParams(object):
     ####################################################################
     # All parameters are of teh format: "/<param-name>"
     ####################################################################
-    SIMULATOR_MODE = __namespace__('sim_mode', 1) # Simulator_mode parameter (1== ON, 0==OFF)
-
+    SIMULATOR_MODE = __namespace__('sim_mode', 0) # Simulator_mode parameter (1== ON, 0==OFF)

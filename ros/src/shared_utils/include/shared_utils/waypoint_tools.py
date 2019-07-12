@@ -1,7 +1,7 @@
-from scipy.spatial import KDTree
-import numpy as np
 import tf
 import math
+import numpy as np
+from scipy.spatial import KDTree
 
 KDTREE_SEARCH_COUNT = 1
 KDTREE_SEARCH_RESULT_IDX = 1 # The KDTree query returns (position, index) tuple. We only need the index value here..hence '1'.

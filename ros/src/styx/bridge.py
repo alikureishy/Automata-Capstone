@@ -12,6 +12,7 @@ from dbw_mkz_msgs.msg import SteeringReport, ThrottleCmd, BrakeCmd, SteeringCmd
 from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2
+from shared_utils.shared_params import IMAGE_DEBOUNCE, SAVING_IMAGES
 from std_msgs.msg import Bool
 from std_msgs.msg import Float32 as Float
 from std_msgs.msg import Header
@@ -173,9 +174,9 @@ class Bridge(object):
         self.publishers['dbw_status'].publish(Bool(data))
 
     def publish_camera(self, data):
+
         self.image_count += 1
-        rospy.logwarn("image_count: %s", self.image_count)
-        if (self.image_count % 1) == 0:
+        if SAVING_IMAGES or self.image_count % IMAGE_DEBOUNCE == 0:
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)

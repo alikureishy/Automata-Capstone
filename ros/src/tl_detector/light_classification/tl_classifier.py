@@ -24,8 +24,8 @@ class TLClassifier(object):
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
 
-        self.color_index = {1: {'id': 1, 'name': 'Green'}, 2: {'id': 2, 'name': 'Red'},
-                            3: {'id': 3, 'name': 'Yellow'}, 4: {'id': 4, 'name': 'off'}}
+        self.color_index = {1: {'id': 1, 'name': 'Green'}, 2: {'id': 2, 'name': 'Yellow'},
+                            3: {'id': 3, 'name': 'Red'}}
 
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
@@ -55,10 +55,11 @@ class TLClassifier(object):
         classes = np.squeeze(classes).astype(np.int32)
 
         min_score_thresh = .5
-
+        rospy.logwarn("classes: %s", classes)
         for i in range(boxes.shape[0]):
             if scores is None or scores[i] > min_score_thresh:
                 class_name = self.color_index[classes[i]]['name']
+                rospy.logwarn("class name: %s", class_name)
                 if class_name == 'Red':
                     return TrafficLight.RED
         return TrafficLight.GREEN

@@ -10,3 +10,8 @@ class TLClassifierParams(object):
     COLLECT_DATA = __namespace__('collect_data', False)
     DATA_FOLDER = __namespace__('data_folder', "../../../images")
 
+    SAVING_IMAGES = __namespace__('save_images', False) # 0 = False / 1 = True
+    TEST_MODE = __namespace__('test_mode', False) # 0 = False / 1 = True
+
+    # sending only every IMAGE_DEBOUNCE-th image from simulator to the topic; doesn't work, when saving images
+    IMAGE_DEBOUNCE = __namespace__('image_debounce', 3)

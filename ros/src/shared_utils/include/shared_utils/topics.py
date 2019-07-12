@@ -3,124 +3,144 @@ import rospy
 from std_msgs.msg import Bool, Int32
 from geometry_msgs.msg import PoseStamped, TwistStamped
 from styx_msgs.msg import Lane, TrafficLightArray, TrafficLight
+from std_msgs.msg import Float32 as Float
+from std_msgs.msg import Header, Bool
+from sensor_msgs.msg import Image
+from sensor_msgs.msg import PointCloud2
 from sensor_msgs.msg import Image
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
 
+TopicTypeMappings = {
+    'bool': Bool,
+    'float': Float,
+    'pose': PoseStamped,
+    'pcl': PointCloud2,
+    'twist': TwistStamped,
+    'steer': SteeringReport,
+    'trafficlights': TrafficLightArray,
+    'steer_cmd': SteeringCmd,
+    'brake_cmd': BrakeCmd,
+    'throttle_cmd': ThrottleCmd,
+    'path_draw': Lane,
+    'image': Image
+}
+
+
 class Topics(object):
     class CurrentPose(object):
-        __topic_name__ = "/current_pose"
+        text = "/current_pose"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, PoseStamped, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, PoseStamped, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, PoseStamped, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, PoseStamped, queue_size=queue_size, latch=latch)
 
     class BaseWaypoints(object):
-        __topic_name__ = "/base_waypoints"
+        text = "/base_waypoints"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, Lane, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, Lane, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, Lane, queue_size=queue_size, latch=latch)
 
     class TrafficWaypoint(object):
-        __topic_name__ = "/traffic_waypoint"
+        text = "/traffic_waypoint"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, Int32, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, Int32, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, Int32, queue_size=queue_size, latch=latch)
 
     class ObstacleWaypoint(object):
-        __topic_name__ = "/obstacle_waypoint"
+        text = "/obstacle_waypoint"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, Int32, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, Int32, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, Int32, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, Int32, queue_size=queue_size, latch=latch)
 
     class TwistCmd(object):
-        __topic_name__ = "/twist_cmd"
+        text = "/twist_cmd"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, TwistStamped, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, TwistStamped, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, TwistStamped, queue_size=queue_size, latch=latch)
 
     class CurrentVelocity(object):
-        __topic_name__ = "/current_velocity"
+        text = "/current_velocity"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, TwistStamped, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, TwistStamped, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, TwistStamped, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, TwistStamped, queue_size=queue_size, latch=latch)
 
     class ImageColor(object):
-        __topic_name__ = "/image_color"
+        text = "/image_color"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, Image, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, Image, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, Image, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, Image, queue_size=queue_size, latch=latch)
 
     class FinalWaypoints(object):
-        __topic_name__ = "final_waypoints"
+        text = "/final_waypoints"
         @classmethod
         def Subscriber(cls, callback, queue_size=None):
-            return rospy.Subscriber(cls.__topic_name__, Lane, callback, queue_size=queue_size)
+            return rospy.Subscriber(cls.text, Lane, callback, queue_size=queue_size)
         @classmethod
         def Publisher(cls, queue_size=None, latch=False):
-            return rospy.Publisher(cls.__topic_name__, Lane, queue_size=queue_size, latch=latch)
+            return rospy.Publisher(cls.text, Lane, queue_size=queue_size, latch=latch)
 
     class Vehicle(object):
         class SteeringCmd(object):
-            __topic_name__ = '/vehicle/steering_cmd'
+            text = '/vehicle/steering_cmd'
             @classmethod
             def Subscriber(cls, callback, queue_size=None):
-                return rospy.Subscriber(cls.__topic_name__, SteeringCmd, callback, queue_size=queue_size)
+                return rospy.Subscriber(cls.text, SteeringCmd, callback, queue_size=queue_size)
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
-                return rospy.Publisher(cls.__topic_name__, SteeringCmd, queue_size=queue_size, latch=latch)
+                return rospy.Publisher(cls.text, SteeringCmd, queue_size=queue_size, latch=latch)
 
         class ThrottleCmd(object):
-            __topic_name__ = "/vehicle/throttle_cmd"
+            text = "/vehicle/throttle_cmd"
             @classmethod
             def Subscriber(cls, callback, queue_size=None):
-                return rospy.Subscriber(cls.__topic_name__, ThrottleCmd, callback, queue_size=queue_size)
+                return rospy.Subscriber(cls.text, ThrottleCmd, callback, queue_size=queue_size)
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
-                return rospy.Publisher(cls.__topic_name__, ThrottleCmd, queue_size=queue_size, latch=latch)
+                return rospy.Publisher(cls.text, ThrottleCmd, queue_size=queue_size, latch=latch)
 
         class BrakeCmd(object):
-            __topic_name__ = "/vehicle/brake_cmd"
+            text = "/vehicle/brake_cmd"
             @classmethod
             def Subscriber(cls, callback, queue_size=None):
-                return rospy.Subscriber(cls.__topic_name__, BrakeCmd, callback, queue_size=queue_size)
+                return rospy.Subscriber(cls.text, BrakeCmd, callback, queue_size=queue_size)
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
-                return rospy.Publisher(cls.__topic_name__, BrakeCmd, queue_size=queue_size, latch=latch)
+                return rospy.Publisher(cls.text, BrakeCmd, queue_size=queue_size, latch=latch)
 
         class TrafficLights(object):
-            __topic_name__ = "/vehicle/traffic_lights"
+            text = "/vehicle/traffic_lights"
             @classmethod
             def Subscriber(cls, callback, queue_size=None):
-                return rospy.Subscriber(cls.__topic_name__, TrafficLightArray, callback, queue_size=queue_size)
+                return rospy.Subscriber(cls.text, TrafficLightArray, callback, queue_size=queue_size)
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
-                return rospy.Publisher(cls.__topic_name__, TrafficLightArray, queue_size=queue_size, latch=latch)
+                return rospy.Publisher(cls.text, TrafficLightArray, queue_size=queue_size, latch=latch)
 
         class DBWEnabled(object):
-            __topic_name__ = "/vehicle/dbw_enabled"
+            text = "/vehicle/dbw_enabled"
             @classmethod
             def Subscriber(cls, callback, queue_size=None):
-                return rospy.Subscriber(cls.__topic_name__, Bool, callback, queue_size=queue_size)
+                return rospy.Subscriber(cls.text, Bool, callback, queue_size=queue_size)
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
-                return rospy.Publisher(cls.__topic_name__, Bool, queue_size=queue_size, latch=latch)
+                return rospy.Publisher(cls.text, Bool, queue_size=queue_size, latch=latch)

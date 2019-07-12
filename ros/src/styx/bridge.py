@@ -12,26 +12,13 @@ from dbw_mkz_msgs.msg import SteeringReport, ThrottleCmd, BrakeCmd, SteeringCmd
 from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2
-from shared_utils.shared_params import IMAGE_DEBOUNCE, SAVING_IMAGES
+from shared_utils.classifier_params import TLClassifierParams
+from shared_utils.topics import Topics, TopicTypeMappings
 from std_msgs.msg import Bool
 from std_msgs.msg import Float32 as Float
 from std_msgs.msg import Header
 from styx_msgs.msg import TrafficLight, TrafficLightArray, Lane
 
-TYPE = {
-    'bool': Bool,
-    'float': Float,
-    'pose': PoseStamped,
-    'pcl': PointCloud2,
-    'twist': TwistStamped,
-    'steer': SteeringReport,
-    'trafficlights': TrafficLightArray,
-    'steer_cmd': SteeringCmd,
-    'brake_cmd': BrakeCmd,
-    'throttle_cmd': ThrottleCmd,
-    'path_draw': Lane,
-    'image':Image
-}
 
 
 class Bridge(object):
@@ -45,17 +32,17 @@ class Bridge(object):
         self.bridge = CvBridge()
 
         self.callbacks = {
-            '/vehicle/steering_cmd': self.callback_steering,
-            '/vehicle/throttle_cmd': self.callback_throttle,
-            '/vehicle/brake_cmd': self.callback_brake,
-            '/final_waypoints': self.callback_path
+            Topics.Vehicle.SteeringCmd.text : self.callback_steering,
+            Topics.Vehicle.ThrottleCmd.text: self.callback_throttle,
+            Topics.Vehicle.BrakeCmd.text: self.callback_brake,
+            Topics.FinalWaypoints.text: self.callback_path
         }
 
-        self.subscribers = [rospy.Subscriber(e.topic, TYPE[e.type], self.callbacks[e.topic])
-                            for e in conf.subscribers]
+        self.subscribers = [rospy.Subscriber(subscriber.topic, TopicTypeMappings[subscriber.type], self.callbacks[subscriber.topic])
+                            for subscriber in conf.subscribers]
 
-        self.publishers = {e.name: rospy.Publisher(e.topic, TYPE[e.type], queue_size=1)
-                           for e in conf.publishers}
+        self.publishers = {publisher.name: rospy.Publisher(publisher.topic, TopicTypeMappings[publisher.type], queue_size=1)
+                           for publisher in conf.publishers}
 
     def create_light(self, x, y, z, yaw, state):
         light = TrafficLight()
@@ -176,7 +163,7 @@ class Bridge(object):
     def publish_camera(self, data):
 
         self.image_count += 1
-        if SAVING_IMAGES or self.image_count % IMAGE_DEBOUNCE == 0:
+        if TLClassifierParams.SAVING_IMAGES or self.image_count % TLClassifierParams.IMAGE_DEBOUNCE == 0:
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)

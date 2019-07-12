@@ -8,8 +8,7 @@ from cv_bridge import CvBridge
 from geometry_msgs.msg import PoseStamped
 from scipy.spatial import KDTree
 from sensor_msgs.msg import Image
-from shared_utils.shared_params import SAVING_IMAGES
-from shared_utils.shared_params import TEST_MODE
+from shared_utils.classifier_params import TLClassifierParams
 from std_msgs.msg import Int32
 from styx_msgs.msg import Lane
 from styx_msgs.msg import TrafficLightArray, TrafficLight
@@ -37,10 +36,10 @@ class TLDetector(object):
         self.image_counter = 0
 
         self.bridge = CvBridge()
-        if not TEST_MODE:
+        if not TLClassifierParams.TEST_MODE:
             self.light_classifier = TLClassifier("graph_optimized.pb")
 
-        if SAVING_IMAGES:
+        if TLClassifierParams.SAVING_IMAGES:
             if not os.path.exists("../../../images/"):
                 os.makedirs("../../../images/")
 
@@ -127,15 +126,15 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
 
-        if TEST_MODE:
+        if TLClassifierParams.TEST_MODE:
             traffic_color = light.state
-            if SAVING_IMAGES:
+            if TLClassifierParams.SAVING_IMAGES:
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         else:
             cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
             traffic_color = self.light_classifier.get_classification(cv_image)
 
-        if SAVING_IMAGES:
+        if TLClassifierParams.SAVING_IMAGES:
             self.saveImages(traffic_color, cv_image)
 
         return traffic_color

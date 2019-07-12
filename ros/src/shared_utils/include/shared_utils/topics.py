@@ -8,7 +8,7 @@ from std_msgs.msg import Header, Bool
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.msg import Image
-from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
+from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport, ThrottleReport, BrakeReport
 
 TopicTypeMappings = {
     'bool': Bool,
@@ -144,3 +144,57 @@ class Topics(object):
             @classmethod
             def Publisher(cls, queue_size=None, latch=False):
                 return rospy.Publisher(cls.text, Bool, queue_size=queue_size, latch=latch)
+
+        class Obstacle(object):
+            text = "/vehicle/obstacle"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, PoseStamped, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, PoseStamped, queue_size=queue_size, latch=latch)
+
+        class ObstaclePoints(object):
+            text = "/vehicle/obstacle_points"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, PointCloud2, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, PointCloud2, queue_size=queue_size, latch=latch)
+
+        class Lidar(object):
+            text = "/vehicle/lidar"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, PointCloud2, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, PointCloud2, queue_size=queue_size, latch=latch)
+
+        class SteeringReport(object):
+            text = "/vehicle/steering_report"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, SteeringReport, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, SteeringReport, queue_size=queue_size, latch=latch)
+
+        class ThrottleReport(object):
+            text = "/vehicle/throttle_report"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, ThrottleReport, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, ThrottleReport, queue_size=queue_size, latch=latch)
+
+        class BrakeReport(object):
+            text = "/vehicle/brake_report"
+            @classmethod
+            def Subscriber(cls, callback, queue_size=None):
+                return rospy.Subscriber(cls.text, BrakeReport, callback, queue_size=queue_size)
+            @classmethod
+            def Publisher(cls, queue_size=None, latch=False):
+                return rospy.Publisher(cls.text, BrakeReport, queue_size=queue_size, latch=latch)

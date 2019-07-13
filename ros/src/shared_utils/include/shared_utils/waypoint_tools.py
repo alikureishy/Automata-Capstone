@@ -1,8 +1,21 @@
+import tf
+import math
 import numpy as np
 from scipy.spatial import KDTree
 
 KDTREE_SEARCH_COUNT = 1
 KDTREE_SEARCH_RESULT_IDX = 1 # The KDTree query returns (position, index) tuple. We only need the index value here..hence '1'.
+
+
+def distance(p1, p2):
+    x, y, z = p1.x - p2.x, p1.y - p2.y, p1.z - p2.z
+    return math.sqrt(x * x + y * y + z * z)
+
+def kmph2mps(velocity_kmph):
+    return (velocity_kmph * 1000.) / (60. * 60.)
+
+def quaternion_from_yaw(yaw):
+    return tf.transformations.quaternion_from_euler(0., 0., yaw)
 
 
 def waypoint_coordinate_extractor(waypoint):

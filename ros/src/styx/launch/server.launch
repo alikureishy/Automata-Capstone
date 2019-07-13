@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="styx" type="server.py" name="styx_server" />
+    <node pkg="styx" type="server.py" name="styx_server" >
+        <param name="port" value="4567"/>
+    </node>
 
     <!--Launch simulator -->
     <node name="unity_simulator" pkg="styx" type="unity_simulator_launcher.sh" output="screen"/>

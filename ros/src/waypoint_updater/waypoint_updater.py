@@ -7,6 +7,10 @@ from styx_msgs.msg import Lane, Waypoint
 from std_msgs.msg import Int32
 from scipy.spatial import KDTree
 
+from shared_utils.topics import Topics
+from shared_utils.params import Params
+from shared_utils.node_names import NodeNames
+
 import math
 
 '''
@@ -24,21 +28,20 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 PUBLISHING_RATE = 20
-LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = 0.5
 
 class WaypointUpdater(object):
     def __init__(self):
-        rospy.init_node('waypoint_updater')
+        rospy.init_node(NodeNames.WAYPOINT_UPDATER)
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size=2)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size=8)
+
+        Topics.CurrentPose.Subscriber(self.pose_cb, queue_size=2)
+        Topics.BaseWaypoints.Subscriber(self.waypoints_cb, queue_size=8)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
-        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb, queue_size=1)
+        Topics.TrafficWaypoint.Subscriber(self.traffic_cb, queue_size=1)
 
-
-        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
+        self.final_waypoints_pub = Topics.FinalWaypoints.Publisher(queue_size=1)
 
         self.base_lane = None
         self.pose = None
@@ -89,7 +92,7 @@ class WaypointUpdater(object):
         # Get the closest index
         closest_idx = self.get_closest_waypoint_idx()
         # Set the farthest index
-        farthest_idx = closest_idx + LOOKAHEAD_WPS
+        farthest_idx = closest_idx + Params.WaypointUpdater.LookaheadWaypointCount.Get()
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
 
         # If no traffic light was detected, publish the base_waypoints as it is

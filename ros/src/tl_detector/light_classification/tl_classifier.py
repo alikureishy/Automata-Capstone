@@ -6,14 +6,12 @@ import rospy
 import tensorflow as tf
 from styx_msgs.msg import TrafficLight
 
-
 class TLClassifier(object):
-    def __init__(self, model_name):
+    def __init__(self, model_path):
         self.current_light = TrafficLight.UNKNOWN
 
         cwd = os.path.dirname(os.path.realpath(__file__))
 
-        model_path = os.path.join(cwd, "model/{}".format(model_name))
         rospy.logwarn("model_path={}".format(model_path))
 
         self.detection_graph = tf.Graph()

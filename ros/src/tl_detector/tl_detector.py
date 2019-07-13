@@ -5,22 +5,19 @@ import cv2
 import rospy
 import yaml
 from cv_bridge import CvBridge
-from geometry_msgs.msg import PoseStamped
 from scipy.spatial import KDTree
 from sensor_msgs.msg import Image
-from shared_utils.shared_params import SAVING_IMAGES
-from shared_utils.shared_params import TEST_MODE
+from shared_utils.params import Params
+from shared_utils.topics import Topics
+from shared_utils.node_names import NodeNames
 from std_msgs.msg import Int32
-from styx_msgs.msg import Lane
 from styx_msgs.msg import TrafficLightArray, TrafficLight
 
 from light_classification.tl_classifier import TLClassifier
 
-STATE_COUNT_THRESHOLD = 3
-
 class TLDetector(object):
     def __init__(self):
-        rospy.init_node('tl_detector')
+        rospy.init_node(NodeNames.TL_DETECTOR, log_level=rospy.DEBUG)
 
         self.pose = None
         self.waypoints = None
@@ -37,19 +34,19 @@ class TLDetector(object):
         self.image_counter = 0
 
         self.bridge = CvBridge()
-        if not TEST_MODE:
-            self.light_classifier = TLClassifier("graph_optimized.pb")
+        if not Params.Classifier.LearnMode.Get():
+            self.light_classifier = TLClassifier(Params.Classifier.ModelFilePath.Get())
 
-        if SAVING_IMAGES:
-            if not os.path.exists("../../../images/"):
-                os.makedirs("../../../images/")
+        if Params.Classifier.SavingImages.Get():
+            if not os.path.exists(Params.Classifier.DataFolder.Get()):
+                os.makedirs(Params.Classifier.DataFolder.Get())
 
-        config_string = rospy.get_param("/traffic_light_config")
+        config_string = Params.Classifier.TrafficLightConfig.Get()
         self.config = yaml.load(config_string)
 
         # Subscribe Current pose and base waypoints 
-        sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size=2)
-        sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size=8)
+        Topics.CurrentPose.Subscriber(self.pose_cb, queue_size=2)
+        Topics.BaseWaypoints.Subscriber(self.waypoints_cb, queue_size=8)
         rospy.logwarn("Start TL Detector")
 
         '''
@@ -59,14 +56,14 @@ class TLDetector(object):
         simulator. When testing on the vehicle, the color state will not be available. You'll need to
         rely on the position of the light and the camera image to predict it.
         '''
-        sub3 = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb, queue_size=2)
-        sub4 = rospy.Subscriber('/image_color', Image, self.image_cb, queue_size=1)
+        Topics.Vehicle.TrafficLights.Subscriber(self.traffic_cb, queue_size=2)
+        Topics.ImageColor.Subscriber(self.image_cb, queue_size=1)
 
         # Get simulator_mode parameter (1== ON, 0==OFF)
-        self.simulator_mode = rospy.get_param("/sim_mode")
+        self.simulator_mode = Params.Shared.SimulationMode.Get()
 
         # Publish the index of the waypoint where we have to stop
-        self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
+        self.upcoming_red_light_pub = Topics.TrafficWaypoint.Publisher(queue_size=1)
 
         rospy.spin()
 
@@ -105,7 +102,7 @@ class TLDetector(object):
         if self.state != state:
             self.state_count = 0
             self.state = state
-        elif self.state_count >= STATE_COUNT_THRESHOLD:
+        elif self.state_count >= Params.Classifier.StateCountThreshold.Get():
             self.last_state = self.state
             light_wp = light_wp if state == TrafficLight.RED else -1
             self.last_wp = light_wp
@@ -127,23 +124,22 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
 
-        if TEST_MODE:
+        if Params.Classifier.LearnMode.Get():
             traffic_color = light.state
-            if SAVING_IMAGES:
+            if Params.Classifier.SavingImages.Get():
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         else:
             cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
             traffic_color = self.light_classifier.get_classification(cv_image)
 
-        if SAVING_IMAGES:
+        if Params.Classifier.SavingImages.Get():
             self.saveImages(traffic_color, cv_image)
 
         return traffic_color
 
     def saveImages(self, traffic_color, cv_image):
         self.image_counter += 1
-        save_file = "../../../images/{}-{}.jpeg".format(self.traffic_color_to_file_name(traffic_color),
-                                                        self.image_counter)
+        save_file = Params.Classifier.ImageNameFormat.Get().format(self.traffic_color_to_file_name(traffic_color), self.image_counter)
         rospy.logwarn("saving image: %s", save_file)
         cv2.imwrite(save_file, cv_image)
 

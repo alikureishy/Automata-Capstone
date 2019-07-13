@@ -8,35 +8,21 @@ import sensor_msgs.point_cloud2 as pcl2
 import tf
 from PIL import Image as PIL_Image
 from cv_bridge import CvBridge
-from dbw_mkz_msgs.msg import SteeringReport, ThrottleCmd, BrakeCmd, SteeringCmd
+from dbw_mkz_msgs.msg import SteeringReport
 from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
-from sensor_msgs.msg import Image
-from sensor_msgs.msg import PointCloud2
-from shared_utils.shared_params import IMAGE_DEBOUNCE, SAVING_IMAGES
+from shared_utils.node_names import NodeNames
+from shared_utils.topics import Topics, Topic
+from shared_utils.params import Params
 from std_msgs.msg import Bool
 from std_msgs.msg import Float32 as Float
 from std_msgs.msg import Header
 from styx_msgs.msg import TrafficLight, TrafficLightArray, Lane
 
-TYPE = {
-    'bool': Bool,
-    'float': Float,
-    'pose': PoseStamped,
-    'pcl': PointCloud2,
-    'twist': TwistStamped,
-    'steer': SteeringReport,
-    'trafficlights': TrafficLightArray,
-    'steer_cmd': SteeringCmd,
-    'brake_cmd': BrakeCmd,
-    'throttle_cmd': ThrottleCmd,
-    'path_draw': Lane,
-    'image':Image
-}
 
 
 class Bridge(object):
     def __init__(self, conf, server):
-        rospy.init_node('styx_server')
+        rospy.init_node(NodeNames.STYX_SERVER, log_level=rospy.DEBUG)
         self.server = server
         self.vel = 0.
         self.yaw = None
@@ -45,17 +31,41 @@ class Bridge(object):
         self.bridge = CvBridge()
 
         self.callbacks = {
-            '/vehicle/steering_cmd': self.callback_steering,
-            '/vehicle/throttle_cmd': self.callback_throttle,
-            '/vehicle/brake_cmd': self.callback_brake,
-            '/final_waypoints': self.callback_path
+            Topics.Vehicle.SteeringCmd.Topic() : self.callback_steering,
+            Topics.Vehicle.ThrottleCmd.Topic(): self.callback_throttle,
+            Topics.Vehicle.BrakeCmd.Topic(): self.callback_brake,
+            Topics.FinalWaypoints.Topic(): self.callback_path
         }
 
-        self.subscribers = [rospy.Subscriber(e.topic, TYPE[e.type], self.callbacks[e.topic])
-                            for e in conf.subscribers]
+        rospy.logdebug("Subscribers received via configuration:")
+        for subscriber in conf.subscribers:
+            rospy.logdebug("\t '%s' : '%s'", subscriber.topic, subscriber.type)
 
-        self.publishers = {e.name: rospy.Publisher(e.topic, TYPE[e.type], queue_size=1)
-                           for e in conf.publishers}
+        self.subscribers = [Topic.Lookup(subscriber.topic).Subscriber(self.callbacks[subscriber.topic])
+                            for subscriber in conf.subscribers]
+
+
+        """
+            These are the publishers generally received from the configuration parameter:
+                /vehicle/throttle_report ==> std_msgs/Float32
+                /vehicle/dbw_enabled ==> std_msgs/Bool
+                /vehicle/lidar ==> sensor_msgs/PointCloud2
+                /vehicle/steering_report ==> dbw_mkz_msgs/SteeringReport
+                /vehicle/brake_report ==> std_msgs/Float32
+                /current_velocity ==> geometry_msgs/TwistStamped
+                /vehicle/obstacle ==> geometry_msgs/PoseStamped
+                /vehicle/traffic_lights ==> styx_msgs/TrafficLightArray
+                /current_pose ==> geometry_msgs/PoseStamped
+                /image_color ==> sensor_msgs/Image
+                /vehicle/obstacle_points ==> sensor_msgs/PointCloud2
+        """
+        rospy.logdebug("Publishers received via configuration:")
+        for publisher in conf.publishers:
+            rospy.logdebug("\t '%s' : '%s'", publisher.topic, publisher.type)
+
+        self.publishers = {publisher.topic: Topic.Lookup(publisher.topic).Publisher(queue_size=1)
+                           for publisher in conf.publishers}
+
 
     def create_light(self, x, y, z, yaw, state):
         light = TrafficLight()
@@ -133,30 +143,30 @@ class Bridge(object):
         orientation = tf.transformations.quaternion_from_euler(0, 0, math.pi * data['yaw']/180.)
         self.broadcast_transform("base_link", position, orientation)
 
-        self.publishers['current_pose'].publish(pose)
+        self.publishers[Topics.CurrentPose.Topic()].publish(pose)
         self.vel = data['velocity']* 0.44704
         self.angular = self.calc_angular(data['yaw'] * math.pi/180.)
-        self.publishers['current_velocity'].publish(self.create_twist(self.vel, self.angular))
+        self.publishers[Topics.CurrentVelocity.Topic()].publish(self.create_twist(self.vel, self.angular))
 
 
     def publish_controls(self, data):
         steering, throttle, brake = data['steering_angle'], data['throttle'], data['brake']
-        self.publishers['steering_report'].publish(self.create_steer(steering))
-        self.publishers['throttle_report'].publish(self.create_float(throttle))
-        self.publishers['brake_report'].publish(self.create_float(brake))
+        self.publishers[Topics.Vehicle.SteeringReport.Topic()].publish(self.create_steer(steering))
+        self.publishers[Topics.Vehicle.ThrottleReport.Topic()].publish(self.create_float(throttle))
+        self.publishers[Topics.Vehicle.BrakeReport.Topic()].publish(self.create_float(brake))
 
     def publish_obstacles(self, data):
         for obs in data['obstacles']:
             pose = self.create_pose(obs[0], obs[1], obs[2])
-            self.publishers['obstacle'].publish(pose)
+            self.publishers[Topics.Vehicle.Obstacle.Topic()].publish(pose)
         header = Header()
         header.stamp = rospy.Time.now()
         header.frame_id = '/world'
         cloud = pcl2.create_cloud_xyz32(header, data['obstacles'])
-        self.publishers['obstacle_points'].publish(cloud)
+        self.publishers[Topics.Vehicle.ObstaclePoints.Topic()].publish(cloud)
 
     def publish_lidar(self, data):
-        self.publishers['lidar'].publish(self.create_point_cloud_message(zip(data['lidar_x'], data['lidar_y'], data['lidar_z'])))
+        self.publishers[Topics.Vehicle.Lidar.Topic()].publish(self.create_point_cloud_message(zip(data['lidar_x'], data['lidar_y'], data['lidar_z'])))
 
     def publish_traffic(self, data):
         x, y, z = data['light_pos_x'], data['light_pos_y'], data['light_pos_z'],
@@ -168,20 +178,22 @@ class Bridge(object):
         header.stamp = rospy.Time.now()
         header.frame_id = '/world'
         lights.lights = [self.create_light(*e) for e in zip(x, y, z, yaw, status)]
-        self.publishers['trafficlights'].publish(lights)
+        self.publishers[Topics.Vehicle.TrafficLights.Topic()].publish(lights)
 
     def publish_dbw_status(self, data):
-        self.publishers['dbw_status'].publish(Bool(data))
+        self.publishers[Topics.Vehicle.DBWEnabled.Topic()].publish(Bool(data))
 
     def publish_camera(self, data):
 
         self.image_count += 1
-        if SAVING_IMAGES or self.image_count % IMAGE_DEBOUNCE == 0:
+
+        # sending only every IMAGE_DEBOUNCE-th image from simulator to the topic; doesn't work, when saving images
+        if Params.Classifier.SavingImages.Get() or self.image_count % Params.Classifier.ImageDebounce.Get() == 0:
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)
             image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
-            self.publishers['image'].publish(image_message)
+            self.publishers[Topics.ImageColor.Topic()].publish(image_message)
 
     def callback_steering(self, data):
         self.server('steer', data={'steering_angle': str(data.steering_wheel_angle_cmd)})

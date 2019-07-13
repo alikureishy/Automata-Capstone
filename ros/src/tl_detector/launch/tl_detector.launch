@@ -1,4 +1,13 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="tl_detector" type="tl_detector.py" name="tl_detector" output="screen" cwd="node"/>
+    <node pkg="tl_detector" type="tl_detector.py" name="tl_detector" output="screen" cwd="node">
+        <!-- Related to the classifier -->
+        <param name="model_file" value="model/graph_optimized.pb"/>
+        <param name="learn_mode" value="1"/>
+
+        <!-- Related to data collection-->
+        <param name="save_images" value="0"/>
+        <param name="image_name_format" value="{}-{}.jpeg"/>
+        <param name="data_folder" value="../../../images/"/>
+    </node>
 </launch>

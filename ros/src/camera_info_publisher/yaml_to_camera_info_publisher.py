@@ -19,6 +19,9 @@ This file just extends that parser into a rosnode.
 import rospy
 import yaml
 from sensor_msgs.msg import CameraInfo
+from shared_utils.topics import Topics
+from shared_utils.params import Params
+from shared_utils.node_names import NodeNames
 
 def yaml_to_CameraInfo(calib_yaml):
     """
@@ -52,14 +55,14 @@ def yaml_to_CameraInfo(calib_yaml):
 
 if __name__ == "__main__":
 
-    calib_yaml = rospy.get_param("/grasshopper_calibration_yaml")
+    # Initialize publisher node
+    rospy.init_node(NodeNames.CAMINFO_PUBLISHER, anonymous=True)
 
     # Parse yaml file
+    calib_yaml = Params.CamInfo.GrasshopperCalibrationYaml.Get()
     camera_info_msg = yaml_to_CameraInfo(calib_yaml)
 
-    # Initialize publisher node
-    rospy.init_node("camera_info_publisher", anonymous=True)
-    publisher = rospy.Publisher("camera_info", CameraInfo, queue_size=10)
+    publisher = Topics.CameraInfo.Publisher(queue_size=10)
     rate = rospy.Rate(10)
 
     # Run publisher

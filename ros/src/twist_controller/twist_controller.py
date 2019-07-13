@@ -1,6 +1,7 @@
 from pid import PID 
 from lowpass import LowPassFilter
-from yaw_controller import YawController 
+from yaw_controller import YawController
+from shared_utils.params import Params
 import rospy
 
 GAS_DENSITY = 2.858
@@ -12,17 +13,13 @@ class Controller(object):
     	accel_limit, wheel_radius, wheel_base, steer_ratio, max_lat_accel, max_steer_angle):        
         
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
-
-        kp = 0.3
-        ki = 0.1
-        kd = 0.
-        mn = 0. # Minimum throttle value
-        mx = 0.2 # Maximum throttle value
-        self.throttle_controller = PID(kp, ki, kd, mn, mx)
-
-        tau = 0.5 # 1/(2pi*tau) = cutoff frequency
-        ts = 0.02 # Sample time
-        self.vel_lpf = LowPassFilter(tau, ts)
+        self.throttle_controller = PID(Params.Controller.Kp.Get(),
+                                       Params.Controller.Ki.Get(),
+                                       Params.Controller.Kd.Get(),
+                                       Params.Controller.Mn.Get(),
+                                       Params.Controller.Mx.Get())
+        self.vel_lpf = LowPassFilter(Params.Controller.Tau.Get(),
+                                     Params.Controller.Ts.Get())
 
         self.vehicle_mass = vehicle_mass
         self.fuel_capacity = fuel_capacity

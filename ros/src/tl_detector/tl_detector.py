@@ -34,7 +34,7 @@ class TLDetector(object):
         self.image_counter = 0
 
         self.bridge = CvBridge()
-        if not Params.Classifier.LearnMode.Get():
+        if not Params.Classifier.CheatMode.Get():
             self.light_classifier = TLClassifier(Params.Classifier.ModelFilePath.Get())
 
         if Params.Classifier.SavingImages.Get():
@@ -124,7 +124,7 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
 
-        if Params.Classifier.LearnMode.Get():
+        if Params.Classifier.CheatMode.Get():
             traffic_color = light.state
             if Params.Classifier.SavingImages.Get():
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")

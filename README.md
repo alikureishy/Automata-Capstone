@@ -33,11 +33,9 @@ By order of joining the team:
 ### Traffic Light Classifier
 
 #### Data sets
-The dataset was downloaded from [here](dataset link). Beside that dataset, we labeled images manually with labelImg.
-![](imgs/labeling.png)
 
-The dataset was downloaded from [here](dataset link). Beside that dataset, we labeled images manually with labelImg.
-![](imgs/labeling.png)
+The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
+![labelImg](imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
@@ -55,17 +53,14 @@ The model was trained on Google Cloud ML and locally as well with the following 
 |---	    |---   |---	          |---	             |---	            |---                  |
 |24         |20000 |0.004         |0.1               |0.5               |0.33                 |
 
-
-
-
 The used scripts for traning are located in [utils folder]
 
 ####Evalation:
 
-![](imgs/combine_sim.jpg)
+![Simulation results](imgs/combine_sim.jpg)
 *Results for Udacity sumlation*
 
-![](imgs/combine_valid.jpg)
+![Training bag results](imgs/combine_valid.jpg)
 *Results for training bag*
 
 ### DBW / Twist Controller

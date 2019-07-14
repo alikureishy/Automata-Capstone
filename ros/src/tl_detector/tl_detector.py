@@ -6,14 +6,14 @@ import rospy
 import yaml
 from cv_bridge import CvBridge
 from scipy.spatial import KDTree
-from sensor_msgs.msg import Image
+from shared_utils.node_names import NodeNames
 from shared_utils.params import Params
 from shared_utils.topics import Topics
-from shared_utils.node_names import NodeNames
 from std_msgs.msg import Int32
-from styx_msgs.msg import TrafficLightArray, TrafficLight
+from styx_msgs.msg import TrafficLight
 
 from light_classification.tl_classifier import TLClassifier
+
 
 class TLDetector(object):
     def __init__(self):
@@ -38,8 +38,9 @@ class TLDetector(object):
             self.light_classifier = TLClassifier(Params.Classifier.ModelFilePath.Get())
 
         if Params.Classifier.SavingImages.Get():
-            if not os.path.exists(Params.Classifier.DataFolder.Get()):
-                os.makedirs(Params.Classifier.DataFolder.Get())
+            for dir in ["/red", "/green", "/yellow", "/none"]:
+                if not os.path.exists(Params.Classifier.DataFolder.Get() + dir):
+                    os.makedirs(Params.Classifier.DataFolder.Get() + dir)
 
         config_string = Params.Classifier.TrafficLightConfig.Get()
         self.config = yaml.load(config_string)
@@ -113,16 +114,15 @@ class TLDetector(object):
         closest_idx = self.waypoint_tree.query([x,y], 1)[1]
         return closest_idx
 
-    def get_light_state(self, light):
+    def get_light_state(self, light=None):
         """Determines the current color of the traffic light
         Args:
             light (TrafficLight): light to classify
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-
         if Params.Classifier.CheatMode.Get():
-            traffic_color = light.state
+            traffic_color = -1 if light == None else light.state
             if Params.Classifier.SavingImages.Get():
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         else:
@@ -136,7 +136,9 @@ class TLDetector(object):
 
     def saveImages(self, traffic_color, cv_image):
         self.image_counter += 1
-        save_file = Params.Classifier.ImageNameFormat.Get().format(self.traffic_color_to_file_name(traffic_color), self.image_counter)
+        dir = self.traffic_color_to_file_name(traffic_color)
+        save_file = Params.Classifier.DataFolder.Get() + dir + "/" + Params.Classifier.ImageNameFormat.Get().format(dir,
+                                                                                                                    self.image_counter)
         rospy.logwarn("saving image: %s", save_file)
         cv2.imwrite(save_file, cv_image)
 
@@ -162,29 +164,31 @@ class TLDetector(object):
 
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
+        if not Params.Classifier.SavingImages.Get():
+            if (self.pose and self.waypoint_tree):
+                # waypoint closest to current car pose
+                car_wp_idx = self.get_closest_waypoint(self.pose.pose.position.x, self.pose.pose.position.y)
+                # total number of waypoints
+                diff = len(self.waypoints.waypoints)
 
-        if(self.pose and self.waypoint_tree):
-            # waypoint closest to current car pose
-            car_wp_idx = self.get_closest_waypoint(self.pose.pose.position.x, self.pose.pose.position.y)
-            # total number of waypoints
-            diff = len(self.waypoints.waypoints)
+                for i, light in enumerate(self.lights):
+                    line = stop_line_positions[i]
+                    temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
 
-            for i, light in enumerate(self.lights):
-                line = stop_line_positions[i]
-                temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
+                    d = temp_wp_idx - car_wp_idx
 
-                d = temp_wp_idx - car_wp_idx
+                    if d >= 0 and d < diff:
+                        diff = d
+                        closest_light = light
+                        line_wp_idx = temp_wp_idx
 
-                if d >= 0 and d < diff:
-                    diff = d
-                    closest_light = light
-                    line_wp_idx = temp_wp_idx
+            if closest_light:
+                state = self.get_light_state(closest_light)
+                return line_wp_idx, state
 
-        if closest_light:
-            state = self.get_light_state(closest_light)
-            return line_wp_idx, state
-        
-        return -1, TrafficLight.UNKNOWN
+            return -1, TrafficLight.UNKNOWN
+        else:
+            return -1, self.get_light_state()
 
 
 if __name__ == '__main__':

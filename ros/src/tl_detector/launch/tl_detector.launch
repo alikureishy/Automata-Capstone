@@ -3,7 +3,7 @@
     <node pkg="tl_detector" type="tl_detector.py" name="tl_detector" output="screen" cwd="node">
         <!-- Related to the classifier -->
         <param name="model_file" value="light_classification/model/graph_optimized.pb"/>
-        <param name="learn_mode" value="0"/>
+        <param name="cheat_mode" value="0"/>
 
         <!-- Related to data collection-->
         <param name="save_images" value="0"/>

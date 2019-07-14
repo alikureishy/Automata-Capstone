@@ -4,6 +4,15 @@
 
 # Overview
 
+## Team Members
+
+By order of joining the team:
+- Ali Safdar Kureishy (Lead)
+- Eugene Verichev
+- Szilard Bessenyei
+- Naveed Usmani
+- Mark Melnykowycz
+
 
 # Installation
 

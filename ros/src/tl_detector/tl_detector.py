@@ -34,7 +34,7 @@ class TLDetector(object):
         self.image_counter = 0
 
         self.bridge = CvBridge()
-        if not Params.Classifier.LearnMode.Get():
+        if not Params.Classifier.CheatMode.Get():
             self.light_classifier = TLClassifier(Params.Classifier.ModelFilePath.Get())
 
         if Params.Classifier.SavingImages.Get():
@@ -58,9 +58,6 @@ class TLDetector(object):
         '''
         Topics.Vehicle.TrafficLights.Subscriber(self.traffic_cb, queue_size=2)
         Topics.ImageColor.Subscriber(self.image_cb, queue_size=1)
-
-        # Get simulator_mode parameter (1== ON, 0==OFF)
-        self.simulator_mode = Params.Shared.SimulationMode.Get()
 
         # Publish the index of the waypoint where we have to stop
         self.upcoming_red_light_pub = Topics.TrafficWaypoint.Publisher(queue_size=1)
@@ -124,7 +121,7 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
 
-        if Params.Classifier.LearnMode.Get():
+        if Params.Classifier.CheatMode.Get():
             traffic_color = light.state
             if Params.Classifier.SavingImages.Get():
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")

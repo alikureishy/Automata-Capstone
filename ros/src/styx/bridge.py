@@ -1,7 +1,7 @@
 import base64
 import math
 from io import BytesIO
-
+import random
 import numpy as np
 import rospy
 import sensor_msgs.point_cloud2 as pcl2
@@ -27,7 +27,6 @@ class Bridge(object):
         self.vel = 0.
         self.yaw = None
         self.angular_vel = 0.
-        self.image_count = 0
         self.bridge = CvBridge()
 
         self.callbacks = {
@@ -184,16 +183,17 @@ class Bridge(object):
         self.publishers[Topics.Vehicle.DBWEnabled.Topic()].publish(Bool(data))
 
     def publish_camera(self, data):
-
-        self.image_count += 1
-
-        # sending only every IMAGE_DEBOUNCE-th image from simulator to the topic; doesn't work, when saving images
-        if Params.Classifier.SavingImages.Get() or self.image_count % Params.Classifier.ImageDebounce.Get() == 0:
+        # Probabilistically publish the image from the simulator:
+        not_dropped = random.uniform(0,1) >= Params.Server.ImageDropProbability.Get()
+        if not_dropped:
             imgString = data["image"]
             image = PIL_Image.open(BytesIO(base64.b64decode(imgString)))
             image_array = np.asarray(image)
             image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
             self.publishers[Topics.ImageColor.Topic()].publish(image_message)
+        else:
+            rospy.logdebug("Dropping image due to probablistic choice")
+
 
     def callback_steering(self, data):
         self.server('steer', data={'steering_angle': str(data.steering_wheel_angle_cmd)})

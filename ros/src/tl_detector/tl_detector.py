@@ -59,9 +59,6 @@ class TLDetector(object):
         Topics.Vehicle.TrafficLights.Subscriber(self.traffic_cb, queue_size=2)
         Topics.ImageColor.Subscriber(self.image_cb, queue_size=1)
 
-        # Get simulator_mode parameter (1== ON, 0==OFF)
-        self.simulator_mode = Params.Shared.SimulationMode.Get()
-
         # Publish the index of the waypoint where we have to stop
         self.upcoming_red_light_pub = Topics.TrafficWaypoint.Publisher(queue_size=1)
 

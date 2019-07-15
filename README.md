@@ -21,6 +21,7 @@ ROS provides a platform and framework, with a vast library of hardware integrati
 The platform operates as a collection of processes ('nodes'), that utilize the ROS platform for message-based event-driven asynchronous communication, through an abstraction called a 'topic', to which these nodes can attach themselves as subscribers (observers) and publishers (observables).
 
 Here is an architectural illustration of the components:
+![Architecture](imgs/architecture.png)
 
 ## Components
 
@@ -38,6 +39,10 @@ Below we discuss our implementation, as it relates to the components above.
 ### Perception Subsystem
 
 #### Traffic light detector/classifier:
+
+##### Topics Involved
+
+![TLDetectorTopics](imgs/tl_detector_topics.png)
 
 ##### Data Set
 
@@ -97,6 +102,8 @@ and publishes the following topics:
 
 - `/final_waypoints` (styx_msgs/Lane)
 
+![WaypointUpdaterTopics](imgs/waypoint_updater_topics.png)
+
 The deceleration relation w.r.t distance from the lane end is roughly following:
 ![distance-vs-velocity](docs/dist-velocity.png)
 
@@ -107,6 +114,9 @@ The deceleration relation w.r.t distance from the lane end is roughly following:
 #### Twist Controller
 
 #### Drive-By-Wire Interface (DBW)
+
+![DBWTopics](imgs/dbw_topics.png)
+
 
 # Results
 

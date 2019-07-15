@@ -37,7 +37,8 @@ class TLDetector(object):
         if not Params.Classifier.CheatMode.Get():
             self.light_classifier = TLClassifier(Params.Classifier.ModelFilePath.Get())
 
-        if Params.Classifier.SavingImages.Get():
+        self.saving_images = Params.Classifier.SavingImages.Get()
+        if self.saving_images:
             for dir in ["/red", "/green", "/yellow", "/none"]:
                 if not os.path.exists(Params.Classifier.DataFolder.Get() + dir):
                     os.makedirs(Params.Classifier.DataFolder.Get() + dir)
@@ -45,7 +46,7 @@ class TLDetector(object):
         config_string = Params.Classifier.TrafficLightConfig.Get()
         self.config = yaml.load(config_string)
 
-        # Subscribe Current pose and base waypoints 
+        # Subscribe Current pose and base waypoints
         Topics.CurrentPose.Subscriber(self.pose_cb, queue_size=2)
         Topics.BaseWaypoints.Subscriber(self.waypoints_cb, queue_size=8)
         rospy.logwarn("Start TL Detector")
@@ -62,6 +63,8 @@ class TLDetector(object):
 
         # Publish the index of the waypoint where we have to stop
         self.upcoming_red_light_pub = Topics.TrafficWaypoint.Publisher(queue_size=1)
+
+        self.state_count_threshold = Params.Classifier.StateCountThreshold.Get()
 
         rospy.spin()
 
@@ -100,7 +103,7 @@ class TLDetector(object):
         if self.state != state:
             self.state_count = 0
             self.state = state
-        elif self.state_count >= Params.Classifier.StateCountThreshold.Get():
+        elif self.state_count >= self.state_count_threshold:
             self.last_state = self.state
             light_wp = light_wp if state == TrafficLight.RED else -1
             self.last_wp = light_wp
@@ -123,13 +126,13 @@ class TLDetector(object):
         """
         if Params.Classifier.CheatMode.Get():
             traffic_color = -1 if light == None else light.state
-            if Params.Classifier.SavingImages.Get():
+            if self.saving_images:
                 cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         else:
             cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
             traffic_color = self.light_classifier.get_classification(cv_image)
 
-        if Params.Classifier.SavingImages.Get():
+        if self.saving_images:
             self.saveImages(traffic_color, cv_image)
 
         return traffic_color
@@ -164,7 +167,7 @@ class TLDetector(object):
 
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
-        if not Params.Classifier.SavingImages.Get():
+        if not self.saving_images:
             if (self.pose and self.waypoint_tree):
                 # waypoint closest to current car pose
                 car_wp_idx = self.get_closest_waypoint(self.pose.pose.position.x, self.pose.pose.position.y)

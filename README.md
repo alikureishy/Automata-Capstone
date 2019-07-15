@@ -85,7 +85,7 @@ The used scripts for traning are located in [utils folder]
 
 This is where the autonomy is implemented. Though there are numerous components that would fall in this category, the scope of this document will be limited only to the components implemented in this particular project. These components are as discussed below.
 
-#### Waypoint Updater
+#### Behavioral Planning -- Waypoint Updater
 
 Waypoint updater provides the waypoints, starting from the car to some points ahead, that the car will follow. The updater will replan at every time step to update the waypoint but also gracefully decelerate the
 car incase of traffic light is red or there are obstacles ahead.
@@ -107,7 +107,9 @@ and publishes the following topics:
 The deceleration relation w.r.t distance from the lane end is roughly following:
 ![distance-vs-velocity](docs/dist-velocity.png)
 
-#### Waypoint Follower
+#### Path Planning -- Waypoint Follower
+
+No changes were made to this component for this project. However, at a high leve, this piece implements Path Planning by determining the trajectory that the car needs to take, split into time-steps, which then dictates the controls that would get sent to the control subsystem for steering and throttle.
 
 ### Control Subsystem
 

@@ -1,7 +1,8 @@
 import base64
 import math
-from io import BytesIO
 import random
+from io import BytesIO
+
 import numpy as np
 import rospy
 import sensor_msgs.point_cloud2 as pcl2
@@ -11,13 +12,12 @@ from cv_bridge import CvBridge
 from dbw_mkz_msgs.msg import SteeringReport
 from geometry_msgs.msg import PoseStamped, Quaternion, TwistStamped
 from shared_utils.node_names import NodeNames
-from shared_utils.topics import Topics, Topic
 from shared_utils.params import Params
+from shared_utils.topics import Topics, Topic
 from std_msgs.msg import Bool
 from std_msgs.msg import Float32 as Float
 from std_msgs.msg import Header
-from styx_msgs.msg import TrafficLight, TrafficLightArray, Lane
-
+from styx_msgs.msg import TrafficLight, TrafficLightArray
 
 
 class Bridge(object):
@@ -191,9 +191,6 @@ class Bridge(object):
             image_array = np.asarray(image)
             image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
             self.publishers[Topics.ImageColor.Topic()].publish(image_message)
-        else:
-            rospy.logdebug("Dropping image due to probablistic choice")
-
 
     def callback_steering(self, data):
         self.server('steer', data={'steering_angle': str(data.steering_wheel_angle_cmd)})

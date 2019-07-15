@@ -5,11 +5,11 @@
 - [Overview](#overview)
 	- [Team Members](#team-members)
 - [Architecture](#architecture)
-	- [Components](#components)
-		- [Sensory Subsystem](#sensory-subsystem)
-		- [Perception Subsystem](#perception-subsystem)
-		- [Planning Subsystem](#planning-subsystem)
-    - [Control Subsystem](#control-subsystem)
+- [Components](#components)
+	- [Sensory Subsystem](#sensory-subsystem)
+	- [Perception Subsystem](#perception-subsystem)
+	- [Planning Subsystem](#planning-subsystem)
+	- [Control Subsystem](#control-subsystem)
 - [Results](#results)
 	- [Simulation Mode](#simulation-mode)
 	- [Site Mode](#site-mode)
@@ -39,7 +39,7 @@ The platform operates as a collection of processes ('nodes'), that utilize the R
 Here is an architectural illustration of the components:
 ![Architecture](imgs/architecture.png)
 
-### Components
+## Components
 
 There are 4 high-level subsystems generally found in a self-driving system:
 
@@ -50,24 +50,24 @@ There are 4 high-level subsystems generally found in a self-driving system:
 
 Below we discuss our implementation, as it relates to the components above.
 
-#### Sensory Subsystem
+### Sensory Subsystem
 
-#### Perception Subsystem
+### Perception Subsystem
 
-##### Traffic light detector/classifier:
+#### Traffic light detector/classifier:
 
-###### Topics Involved
+##### Topics Involved
 
 ![TLDetectorTopics](imgs/tl_detector_topics.png)
 
-###### Data Set
+##### Data Set
 
 The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
 ![labelImg](imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
-###### Training the model
+##### Training the model
 
 We chose the transfer learning technique to solve traffic light classification. We fine-tuned the ssd_mobilenet_v2 model from the Tensorflow model zoo. We made the following significant changes:
 
@@ -85,7 +85,7 @@ The model was trained on Google Cloud ML and locally as well with the following 
 
 The used scripts for traning are located in [utils folder]
 
-###### Model Evalation:
+##### Model Evalation:
 
 ![Simulation results](imgs/combine_sim.jpg)
 *Results for Udacity sumlation*
@@ -93,15 +93,15 @@ The used scripts for traning are located in [utils folder]
 ![Training bag results](imgs/combine_valid.jpg)
 *Results for training bag*
 
-##### Obstacle Detector
+#### Obstacle Detector
 
 <TBD>
 
-#### Planning Subsystem
+### Planning Subsystem
 
 This is where the autonomy is implemented. Though there are numerous components that would fall in this category, the scope of this document will be limited only to the components implemented in this particular project. These components are as discussed below.
 
-##### Behavioral Planning -- Waypoint Updater
+#### Behavioral Planning -- Waypoint Updater
 
 Waypoint updater provides the waypoints, starting from the car to some points ahead, that the car will follow. The updater will replan at every time step to update the waypoint but also gracefully decelerate the
 car incase of traffic light is red or there are obstacles ahead.
@@ -123,15 +123,15 @@ and publishes the following topics:
 The deceleration relation w.r.t distance from the lane end is roughly following:
 ![distance-vs-velocity](docs/dist-velocity.png)
 
-##### Path Planning -- Waypoint Follower
+#### Path Planning -- Waypoint Follower
 
 No changes were made to this component for this project. However, at a high leve, this piece implements Path Planning by determining the trajectory that the car needs to take, split into time-steps, which then dictates the controls that would get sent to the control subsystem for steering and throttle.
 
-#### Control Subsystem
+### Control Subsystem
 
-##### Twist Controller
+#### Twist Controller
 
-##### Drive-By-Wire Interface (DBW)
+#### Drive-By-Wire Interface (DBW)
 
 ![DBWTopics](imgs/dbw_topics.png)
 

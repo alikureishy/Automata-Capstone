@@ -1,8 +1,25 @@
 # Self Driving Car - Capstone Project
+<img src="./docs/imgs/kitt.gif" width="1000">
 
-# Overview
+## Table of Contents
 
-## Team Members
+- [Overview](#overview)
+	- [Team Members](#team-members)
+- [Architecture](#architecture)
+- [Components](#components)
+	- [Sensory Subsystem](#sensory-subsystem)
+	- [Perception Subsystem](#perception-subsystem)
+	- [Planning Subsystem](#planning-subsystem)
+	- [Control Subsystem](#control-subsystem)
+- [Results](#results)
+	- [Simulation Mode](#simulation-mode)
+	- [Site Mode](#site-mode)
+- [Limitations & Future Enhancements](#limitations--future-enhancements)
+
+
+## Overview
+
+### Team Members
 
 By order of joining the team:
 
@@ -12,7 +29,7 @@ By order of joining the team:
 - Naveed Usmani
 - Mark Melnykowycz
 
-# Architecture
+## Architecture
 
 This project aims to integrate different components of autonomous driving onto a ROS platform that can be installed on a specific vehicle (a Lincoln HKZ sedan) and would, in the absence of any obstacles, achieve single-lane navigation that obeys traffic lights.
 
@@ -21,6 +38,7 @@ ROS provides a platform and framework, with a vast library of hardware integrati
 The platform operates as a collection of processes ('nodes'), that utilize the ROS platform for message-based event-driven asynchronous communication, through an abstraction called a 'topic', to which these nodes can attach themselves as subscribers (observers) and publishers (observables).
 
 Here is an architectural illustration of the components:
+![Architecture](docs/imgs/architecture.png)
 
 ## Components
 
@@ -39,10 +57,14 @@ Below we discuss our implementation, as it relates to the components above.
 
 #### Traffic light detector/classifier:
 
+##### Topics Involved
+
+![TLDetectorTopics](docs/imgs/tl_detector_topics.png)
+
 ##### Data Set
 
 The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
-![labelImg](imgs/labeling.png)
+![labelImg](docs/imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
@@ -66,21 +88,21 @@ The used scripts for traning are located in [utils folder]
 
 ##### Model Evalation:
 
-![Simulation results](imgs/combine_sim.jpg)
+![Simulation results](docs/imgs/combine_sim.jpg)
 *Results for Udacity sumlation*
 
-![Training bag results](imgs/combine_valid.jpg)
+![Training bag results](docs/imgs/combine_valid.jpg)
 *Results for training bag*
 
 #### Obstacle Detector
 
 <TBD>
 
-### Planning
+### Planning Subsystem
 
 This is where the autonomy is implemented. Though there are numerous components that would fall in this category, the scope of this document will be limited only to the components implemented in this particular project. These components are as discussed below.
 
-#### Waypoint Updater
+#### Behavioral Planning -- Waypoint Updater
 
 Waypoint updater provides the waypoints, starting from the car to some points ahead, that the car will follow. The updater will replan at every time step to update the waypoint but also gracefully decelerate the
 car incase of traffic light is red or there are obstacles ahead.
@@ -97,10 +119,14 @@ and publishes the following topics:
 
 - `/final_waypoints` (styx_msgs/Lane)
 
+![WaypointUpdaterTopics](docs/imgs/waypoint_updater_topics.png)
+
 The deceleration relation w.r.t distance from the lane end is roughly following:
 ![distance-vs-velocity](docs/dist-velocity.png)
 
-#### Waypoint Follower
+#### Path Planning -- Waypoint Follower
+
+No changes were made to this component for this project. However, at a high leve, this piece implements Path Planning by determining the trajectory that the car needs to take, split into time-steps, which then dictates the controls that would get sent to the control subsystem for steering and throttle.
 
 ### Control Subsystem
 
@@ -108,12 +134,21 @@ The deceleration relation w.r.t distance from the lane end is roughly following:
 
 #### Drive-By-Wire Interface (DBW)
 
-# Results
+![DBWTopics](docs/imgs/dbw_topics.png)
 
-## Simulation Mode
 
-## Site Mode
+## Results
 
-# Limitations
+### Simulation Mode
 
-# Future Enhancements
+### Site Mode
+
+## Limitations & Future Enhancements
+
+### Obstacle detection/avoidance
+
+### Lane change
+
+### Pedestrian tracking
+
+### Other vehicle tracking

@@ -1,18 +1,16 @@
 # Self Driving Car - Capstone Project
 
-
-
 # Overview
 
 ## Team Members
 
 By order of joining the team:
+
 - Ali Kureishy (Lead)
 - Eugene Verichev
 - Szilard Bessenyei
 - Naveed Usmani
 - Mark Melnykowycz
-
 
 # Architecture
 
@@ -24,14 +22,14 @@ The platform operates as a collection of processes ('nodes'), that utilize the R
 
 Here is an architectural illustration of the components:
 
-
 ## Components
 
 There are 4 high-level subsystems generally found in a self-driving system:
+
 - Sensors: How the vehicle senses information about its surroundings
 - Perception: How the vehicle attaches meaning/semantics/understanding to the sensory information it receives
 - Planning: How the vehicle reacts to the perceived semantics (the brains of the car)
-- Control: Actuates the decisions from the planner (such as with steering, throttle, brake etc) 
+- Control: Actuates the decisions from the planner (such as with steering, throttle, brake etc)
 
 Below we discuss our implementation, as it relates to the components above.
 
@@ -39,7 +37,7 @@ Below we discuss our implementation, as it relates to the components above.
 
 ### Perception Subsystem
 
-#### Traffic light detector/classifier: 
+#### Traffic light detector/classifier:
 
 ##### Data Set
 
@@ -49,17 +47,19 @@ The dataset was downloaded from [here](dataset_link). Beside that dataset, we la
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
 ##### Training the model
+
 We chose the transfer learning technique to solve traffic light classification. We fine-tuned the ssd_mobilenet_v2 model from the Tensorflow model zoo. We made the following significant changes:
+
 1. We decreased the last fully connected layer from 90 to 3 nodes.
 2. Increased the box predictor size from 1 to 3.
 3. We enabled depth wise convolution.
 4. We reduced the training process steps from 200k to 20k.
-5.  We changed the paths for tune checkpoint, input, and label map path.
+5. We changed the paths for tune checkpoint, input, and label map path.
 
 The model was trained on Google Cloud ML and locally as well with the following configuration:
 
 |Batch Size |Steps |Learning Rate |Anchors Min Scale |Anchors Max Scale |Anchors Aspect Ratio |
-|---	    |---   |---	          |---	             |---	            |---                  |
+|---        |---   |---           |---               |---               |---                  |
 |24         |20000 |0.004         |0.1               |0.5               |0.33                 |
 
 The used scripts for traning are located in [utils folder]
@@ -82,16 +82,31 @@ This is where the autonomy is implemented. Though there are numerous components 
 
 #### Waypoint Updater
 
-#### Waypoint Follower
+Waypoint updater provides the waypoints, starting from the car to some points ahead, that the car will follow. The updater will replan at every time step to update the waypoint but also gracefully decelerate the
+car incase of traffic light is red or there are obstacles ahead.
 
+This node receives map information, localization (car's current location in the map) and traffic light status (by traffic waypoint) and decelerrates the car to a stop if the traffic light is red.
+
+waypoint_updater node subscribes to following:
+
+- `/base_waypoints` (styx_msgs/Lane)
+- `/current_pose` (geometry_msgs/PoseStamped)
+- `/traffic_waypoint` (std_msgs/Int32)
+
+and publishes the following topics:
+
+- `/final_waypoints` (styx_msgs/Lane)
+
+The deceleration relation w.r.t distance from the lane end is roughly following:
+![distance-vs-velocity](docs/dist-velocity.png)
+
+#### Waypoint Follower
 
 ### Control Subsystem
 
 #### Twist Controller
 
 #### Drive-By-Wire Interface (DBW)
-
-
 
 # Results
 

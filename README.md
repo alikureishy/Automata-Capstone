@@ -1,4 +1,5 @@
 # Self Driving Car - Capstone Project
+![KITT](imgs/kitt.gif)
 
 ## Table of Contents
 

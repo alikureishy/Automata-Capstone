@@ -6,6 +6,7 @@ import rospy
 import tensorflow as tf
 from styx_msgs.msg import TrafficLight
 
+
 class TLClassifier(object):
     def __init__(self, model_path):
         self.current_light = TrafficLight.UNKNOWN
@@ -53,7 +54,6 @@ class TLClassifier(object):
         classes = np.squeeze(classes).astype(np.int32)
 
         min_score_thresh = .5
-        rospy.logwarn("classes: %s", classes)
         for i in range(boxes.shape[0]):
             if scores is None or scores[i] > min_score_thresh:
                 class_name = self.color_index[classes[i]]['name']

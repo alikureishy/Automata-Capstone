@@ -60,6 +60,10 @@ class ScopedResolver(object):
             else:
                 raise ("Unknown scope: {}".format(self.scope))
             self.saved_value = value
+            
+            rospy.logdebug("[%s] [%s] param lookup: '%s' [=> '%s']. Retrieved value = '%s' (Default: '%s')", self.scope,
+                           "Dynamic" if self.dynamic else "Static",
+                           self.param_name, name_attempted, self.saved_value, default_value)
 
         return self.saved_value
 

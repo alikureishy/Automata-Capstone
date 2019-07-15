@@ -124,6 +124,15 @@ The deceleration relation w.r.t distance from the lane end is roughly following:
 
 ## Site Mode
 
-# Limitations
+# Limitations & Future Enhancements
 
-# Future Enhancements
+## Obstacle detection/avoidance
+
+## Lane change
+
+## Pedestrian tracking
+
+## Other vehicle tracking
+
+
+

@@ -119,7 +119,7 @@ and publishes the following topics:
 ![WaypointUpdaterTopics](docs/imgs/waypoint_updater_topics.png)
 
 The deceleration relation w.r.t distance from the lane end is roughly following:
-![distance-vs-velocity](docs/dist-velocity.png)
+![distance-vs-velocity](docs/imgs/dist-velocity.png)
 
 #### Path Planning -- Waypoint Follower
 

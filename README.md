@@ -94,9 +94,6 @@ The used scripts for traning are located in [utils folder]
 ![Training bag results](docs/imgs/combine_valid.jpg)
 *Results for training bag*
 
-#### Obstacle Detector
-
-<TBD>
 
 ### Planning Subsystem
 

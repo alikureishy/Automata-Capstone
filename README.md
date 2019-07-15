@@ -1,5 +1,5 @@
 # Self Driving Car - Capstone Project
-![KITT](imgs/kitt.gif =800x600)
+<img src="./imgs/kitt.gif" width="1000">
 
 ## Table of Contents
 

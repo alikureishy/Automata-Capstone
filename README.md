@@ -13,7 +13,7 @@
 - [Results](#results)
 	- [Simulation Mode](#simulation-mode)
 	- [Site Mode](#site-mode)
-- [Limitations & Future Enhancements](#limitations-&-future-enhancements)
+- [Limitations & Future Enhancements](#limitations--future-enhancements)
 
 
 ## Overview

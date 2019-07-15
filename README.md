@@ -39,16 +39,16 @@ Below we discuss our implementation, as it relates to the components above.
 
 ### Perception Subsystem
 
-##### Traffic light detector/classifier: 
+#### Traffic light detector/classifier: 
 
-###### Data Set
+##### Data Set
 
 The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
 ![labelImg](imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
-###### Training the model
+##### Training the model
 We chose the transfer learning technique to solve traffic light classification. We fine-tuned the ssd_mobilenet_v2 model from the Tensorflow model zoo. We made the following significant changes:
 1. We decreased the last fully connected layer from 90 to 3 nodes.
 2. Increased the box predictor size from 1 to 3.
@@ -64,7 +64,7 @@ The model was trained on Google Cloud ML and locally as well with the following 
 
 The used scripts for traning are located in [utils folder]
 
-###### Model Evalation:
+##### Model Evalation:
 
 ![Simulation results](imgs/combine_sim.jpg)
 *Results for Udacity sumlation*
@@ -72,7 +72,7 @@ The used scripts for traning are located in [utils folder]
 ![Training bag results](imgs/combine_valid.jpg)
 *Results for training bag*
 
-##### Obstacle Detector
+#### Obstacle Detector
 
 <TBD>
 

@@ -1,5 +1,5 @@
 # Self Driving Car - Capstone Project
-<img src="./imgs/kitt.gif" width="1000">
+<img src="./docs/imgs/kitt.gif" width="1000">
 
 ## Table of Contents
 
@@ -38,7 +38,7 @@ ROS provides a platform and framework, with a vast library of hardware integrati
 The platform operates as a collection of processes ('nodes'), that utilize the ROS platform for message-based event-driven asynchronous communication, through an abstraction called a 'topic', to which these nodes can attach themselves as subscribers (observers) and publishers (observables).
 
 Here is an architectural illustration of the components:
-![Architecture](imgs/architecture.png)
+![Architecture](docs/imgs/architecture.png)
 
 ## Components
 
@@ -59,12 +59,12 @@ Below we discuss our implementation, as it relates to the components above.
 
 ##### Topics Involved
 
-![TLDetectorTopics](imgs/tl_detector_topics.png)
+![TLDetectorTopics](docs/imgs/tl_detector_topics.png)
 
 ##### Data Set
 
 The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
-![labelImg](imgs/labeling.png)
+![labelImg](docs/imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
 
@@ -88,10 +88,10 @@ The used scripts for traning are located in [utils folder]
 
 ##### Model Evalation:
 
-![Simulation results](imgs/combine_sim.jpg)
+![Simulation results](docs/imgs/combine_sim.jpg)
 *Results for Udacity sumlation*
 
-![Training bag results](imgs/combine_valid.jpg)
+![Training bag results](docs/imgs/combine_valid.jpg)
 *Results for training bag*
 
 #### Obstacle Detector
@@ -119,7 +119,7 @@ and publishes the following topics:
 
 - `/final_waypoints` (styx_msgs/Lane)
 
-![WaypointUpdaterTopics](imgs/waypoint_updater_topics.png)
+![WaypointUpdaterTopics](docs/imgs/waypoint_updater_topics.png)
 
 The deceleration relation w.r.t distance from the lane end is roughly following:
 ![distance-vs-velocity](docs/dist-velocity.png)
@@ -134,7 +134,7 @@ No changes were made to this component for this project. However, at a high leve
 
 #### Drive-By-Wire Interface (DBW)
 
-![DBWTopics](imgs/dbw_topics.png)
+![DBWTopics](docs/imgs/dbw_topics.png)
 
 
 ## Results

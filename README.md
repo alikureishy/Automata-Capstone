@@ -63,7 +63,7 @@ Below we discuss our implementation, as it relates to the components above.
 
 ##### Data Set
 
-The dataset was downloaded from [here](dataset_link). Beside that dataset, we labeled images manually with labelImg.
+We labeled images manually with labelImg.
 ![labelImg](docs/imgs/labeling.png)
 
 We had three classes: 1 - Green, 2 - Yellow, 3 - Red.
@@ -84,7 +84,7 @@ The model was trained on Google Cloud ML and locally as well with the following 
 |---        |---   |---           |---               |---               |---                  |
 |24         |20000 |0.004         |0.1               |0.5               |0.33                 |
 
-The used scripts for traning are located in [utils folder]
+The used scripts for traning are located in [utils folder](utils)
 
 ##### Model Evalation:
 

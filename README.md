@@ -23,11 +23,11 @@
 
 By order of joining the team:
 
-- Ali Kureishy (Lead)
-- Eugene Verichev
-- Szilard Bessenyei
-- Naveed Usmani
-- Mark Melnykowycz
+- Ali Kureishy (Lead) (safdar.kureishy@gmail.com)
+- Eugene Verichev (verichev.iyc@gmail.com)
+- Szilard Bessenyei (bessszilard@gmail.com)
+- Naveed Usmani (naveedhd@gmail.com)
+- Mark Melnykowycz (mark.melnykowycz@gmail.com)
 
 ## Architecture
 
